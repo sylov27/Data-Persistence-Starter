@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+
 public class MainManager : MonoBehaviour
 {
     public Brick BrickPrefab;
@@ -11,6 +12,7 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    [SerializeField] private Text bestScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
@@ -36,6 +38,8 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+
+        bestScoreText.text = "Best Score : " + PersistManager.persistentManager.bestUserName + " : " + PersistManager.persistentManager.bestScore;
     }
 
     private void Update()
@@ -55,9 +59,17 @@ public class MainManager : MonoBehaviour
         }
         else if (m_GameOver)
         {
+            if(m_Points > PersistManager.persistentManager.bestScore)
+            {
+                PersistManager.persistentManager.bestScore = m_Points;
+                PersistManager.persistentManager.bestUserName = PersistManager.persistentManager.userName;
+            }
+            bestScoreText.text = "Best Score : " + PersistManager.persistentManager.bestUserName + " : " + PersistManager.persistentManager.bestScore;
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }else if (Input.GetKeyDown(KeyCode.Escape)){
+                SceneManager.LoadScene(0);
             }
         }
     }
@@ -73,4 +85,6 @@ public class MainManager : MonoBehaviour
         m_GameOver = true;
         GameOverText.SetActive(true);
     }
+    
+
 }
